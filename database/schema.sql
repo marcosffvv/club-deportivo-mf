@@ -62,3 +62,16 @@ FLUSH PRIVILEGES;
 
 INSERT INTO Socio (nombre, apellidos, email, telefono, fecha_alta, activo, id_tipo_cuota)
 VALUES ('Juan', 'Pérez', 'juan@email.com', '600123123', '2024-01-01', true, 1);
+
+CREATE TABLE Pago (
+                      id_pago INT AUTO_INCREMENT PRIMARY KEY,
+                      id_socio INT NOT NULL,
+                      mes INT NOT NULL,
+                      anio INT NOT NULL,
+                      fecha_pago DATE,
+                      importe DECIMAL(10,2),
+
+                      FOREIGN KEY (id_socio) REFERENCES Socio(id_socio),
+
+                      UNIQUE (id_socio, mes, anio)
+);

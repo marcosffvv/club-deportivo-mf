@@ -42,6 +42,40 @@ public class SocioDAO {
 
         return socios;
     }
+
+    // 🔥 NUEVO MÉTODO (EL QUE TE FALTABA)
+    public Socio obtenerPorId(int idSocio) {
+
+        String sql = "SELECT * FROM Socio WHERE id_socio = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idSocio);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+
+                Socio socio = new Socio();
+
+                socio.setIdSocio(rs.getInt("id_socio"));
+                socio.setNombre(rs.getString("nombre"));
+                socio.setApellidos(rs.getString("apellidos"));
+                socio.setEmail(rs.getString("email"));
+                socio.setTelefono(rs.getString("telefono"));
+                socio.setActivo(rs.getBoolean("activo"));
+                socio.setIdTipoCuota(rs.getInt("id_tipo_cuota"));
+
+                return socio;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public void insertarSocio(Socio socio) {
 
         String sql = "INSERT INTO Socio (nombre, apellidos, email, telefono, fecha_alta, activo, id_tipo_cuota) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -65,6 +99,7 @@ public class SocioDAO {
             e.printStackTrace();
         }
     }
+
     public void actualizarSocio(Socio socio) {
 
         String sql = "UPDATE Socio SET nombre=?, apellidos=?, email=?, telefono=?, activo=?, id_tipo_cuota=? WHERE id_socio=?";
@@ -88,6 +123,7 @@ public class SocioDAO {
             e.printStackTrace();
         }
     }
+
     public void eliminarSocio(int idSocio) {
 
         String sql = "DELETE FROM Socio WHERE id_socio=?";

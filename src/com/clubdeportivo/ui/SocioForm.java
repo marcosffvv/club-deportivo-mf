@@ -33,9 +33,9 @@ public class SocioForm extends Stage {
         ComboBox<TipoCuota> cuotaBox = new ComboBox<>();
 
         cuotaBox.getItems().addAll(
-                new TipoCuota(1, "Básica"),
-                new TipoCuota(2, "Gold"),
-                new TipoCuota(3, "Premium")
+                new TipoCuota(1, "Básica", 30.0, 2),
+                new TipoCuota(2, "Gold", 50.0, 5),
+                new TipoCuota(3, "Premium", 80.0, 10)
         );
 
         cuotaBox.setValue(
