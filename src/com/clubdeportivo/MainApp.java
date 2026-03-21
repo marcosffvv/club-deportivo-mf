@@ -12,7 +12,7 @@ public class MainApp extends Application {
 
         SocioView view = new SocioView();
 
-        Scene scene = new Scene(view, 600, 400);
+        Scene scene = new Scene(view, 900, 550);
 
         stage.setTitle("Club Deportivo - Gestión de socios");
         stage.setScene(scene);

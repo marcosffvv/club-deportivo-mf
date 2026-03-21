@@ -26,6 +26,11 @@ public class SocioView extends VBox {
         PagoService pagoService = new PagoService();
         InvitacionService invitacionService = new InvitacionService();
 
+        // 🔥 TÍTULO
+        Label titulo = new Label("Gestión de Socios");
+        titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        // COLUMNAS
         TableColumn<Socio, String> idCol = new TableColumn<>("ID");
         idCol.setCellValueFactory(data ->
                 new SimpleStringProperty(String.valueOf(data.getValue().getIdSocio()))
@@ -68,7 +73,7 @@ public class SocioView extends VBox {
             return new SimpleStringProperty(nombreCuota);
         });
 
-        // ESTADO PAGO
+        // ESTADO
         TableColumn<Socio, String> estadoCol = new TableColumn<>("Estado");
         estadoCol.setCellValueFactory(data -> {
 
@@ -106,19 +111,15 @@ public class SocioView extends VBox {
             }
         });
 
-        // 🔥 NUEVA COLUMNA INVITACIONES
+        // INVITACIONES
         TableColumn<Socio, String> invitacionesCol = new TableColumn<>("Invitaciones");
 
         invitacionesCol.setCellValueFactory(data -> {
-
             Socio socio = data.getValue();
-
             int disponibles = invitacionService.obtenerDisponibles(socio.getIdSocio());
-
             return new SimpleStringProperty(String.valueOf(disponibles));
         });
 
-        // COLOR
         invitacionesCol.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(String value, boolean empty) {
@@ -149,8 +150,13 @@ public class SocioView extends VBox {
                 telefonoCol,
                 cuotaCol,
                 estadoCol,
-                invitacionesCol // 👈 NUEVO
+                invitacionesCol
         );
+
+        // 🔥 MEJORAS TABLA
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setPlaceholder(new Label("No hay datos disponibles"));
+        table.setStyle("-fx-selection-bar: #90CAF9;");
 
         // BOTONES
         Button btnAñadir = new Button("Añadir socio");
@@ -160,7 +166,16 @@ public class SocioView extends VBox {
         Button btnPago = new Button("Registrar pago");
         Button btnInvitacion = new Button("Usar invitación");
 
+        // 🔥 ESTILO BOTONES
+        btnAñadir.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+        btnEditar.setStyle("-fx-background-color: #9E9E9E; -fx-text-fill: white;");
+        btnEliminar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+        btnRecargar.setStyle("-fx-background-color: #9E9E9E; -fx-text-fill: white;");
+        btnPago.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+        btnInvitacion.setStyle("-fx-background-color: #9E9E9E; -fx-text-fill: white;");
+
         HBox botones = new HBox(10);
+        botones.setStyle("-fx-padding: 10; -fx-alignment: center-left;");
         botones.getChildren().addAll(
                 btnAñadir,
                 btnEditar,
@@ -213,7 +228,6 @@ public class SocioView extends VBox {
             form.show();
         });
 
-        // INVITACIONES
         btnInvitacion.setOnAction(e -> {
 
             Socio socio = table.getSelectionModel().getSelectedItem();
@@ -226,7 +240,6 @@ public class SocioView extends VBox {
 
             if (ok) {
                 int disponibles = invitacionService.obtenerDisponibles(socio.getIdSocio());
-
                 alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setContentText("Invitación usada. Disponibles: " + disponibles);
             } else {
@@ -241,8 +254,11 @@ public class SocioView extends VBox {
 
         cargarSocios();
 
-        this.setSpacing(10);
-        this.getChildren().addAll(botones, table);
+        // 🔥 ESTILO GENERAL
+        this.setSpacing(15);
+        this.setStyle("-fx-padding: 15;");
+
+        this.getChildren().addAll(titulo, botones, table);
     }
 
     private void cargarSocios() {
