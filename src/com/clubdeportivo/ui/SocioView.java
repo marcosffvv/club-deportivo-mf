@@ -2,6 +2,7 @@ package com.clubdeportivo.ui;
 
 import com.clubdeportivo.dao.SocioDAO;
 import com.clubdeportivo.model.Socio;
+import com.clubdeportivo.service.InvitacionService;
 import com.clubdeportivo.service.PagoService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -21,7 +22,9 @@ public class SocioView extends VBox {
     public SocioView() {
 
         table = new TableView<>();
+
         PagoService pagoService = new PagoService();
+        InvitacionService invitacionService = new InvitacionService();
 
         TableColumn<Socio, String> idCol = new TableColumn<>("ID");
         idCol.setCellValueFactory(data ->
@@ -48,7 +51,6 @@ public class SocioView extends VBox {
                 new SimpleStringProperty(data.getValue().getTelefono())
         );
 
-        // CUOTA
         TableColumn<Socio, String> cuotaCol = new TableColumn<>("Cuota");
         cuotaCol.setCellValueFactory(data -> {
 
@@ -66,9 +68,8 @@ public class SocioView extends VBox {
             return new SimpleStringProperty(nombreCuota);
         });
 
-        // ESTADO
+        // ESTADO PAGO
         TableColumn<Socio, String> estadoCol = new TableColumn<>("Estado");
-
         estadoCol.setCellValueFactory(data -> {
 
             Socio socio = data.getValue();
@@ -85,7 +86,6 @@ public class SocioView extends VBox {
             return new SimpleStringProperty(estado);
         });
 
-        // COLOR
         estadoCol.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(String estado, boolean empty) {
@@ -106,6 +106,41 @@ public class SocioView extends VBox {
             }
         });
 
+        // 🔥 NUEVA COLUMNA INVITACIONES
+        TableColumn<Socio, String> invitacionesCol = new TableColumn<>("Invitaciones");
+
+        invitacionesCol.setCellValueFactory(data -> {
+
+            Socio socio = data.getValue();
+
+            int disponibles = invitacionService.obtenerDisponibles(socio.getIdSocio());
+
+            return new SimpleStringProperty(String.valueOf(disponibles));
+        });
+
+        // COLOR
+        invitacionesCol.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String value, boolean empty) {
+                super.updateItem(value, empty);
+
+                if (empty || value == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(value);
+
+                    int num = Integer.parseInt(value);
+
+                    if (num == 0) {
+                        setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+                    } else {
+                        setStyle("-fx-text-fill: green;");
+                    }
+                }
+            }
+        });
+
         table.getColumns().addAll(
                 idCol,
                 nombreCol,
@@ -113,7 +148,8 @@ public class SocioView extends VBox {
                 emailCol,
                 telefonoCol,
                 cuotaCol,
-                estadoCol
+                estadoCol,
+                invitacionesCol // 👈 NUEVO
         );
 
         // BOTONES
@@ -121,7 +157,8 @@ public class SocioView extends VBox {
         Button btnEditar = new Button("Editar socio");
         Button btnEliminar = new Button("Eliminar socio");
         Button btnRecargar = new Button("Recargar");
-        Button btnPago = new Button("Registrar pago"); // 👈 NUEVO
+        Button btnPago = new Button("Registrar pago");
+        Button btnInvitacion = new Button("Usar invitación");
 
         HBox botones = new HBox(10);
         botones.getChildren().addAll(
@@ -129,7 +166,8 @@ public class SocioView extends VBox {
                 btnEditar,
                 btnEliminar,
                 btnRecargar,
-                btnPago // 👈 AÑADIDO
+                btnPago,
+                btnInvitacion
         );
 
         btnRecargar.setOnAction(e -> cargarSocios());
@@ -137,7 +175,6 @@ public class SocioView extends VBox {
         btnEliminar.setOnAction(e -> {
 
             Socio socioSeleccionado = table.getSelectionModel().getSelectedItem();
-
             if (socioSeleccionado == null) return;
 
             Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
@@ -171,10 +208,35 @@ public class SocioView extends VBox {
             }
         });
 
-        // 🔥 BOTÓN PAGOS
         btnPago.setOnAction(e -> {
             PagoForm form = new PagoForm();
             form.show();
+        });
+
+        // INVITACIONES
+        btnInvitacion.setOnAction(e -> {
+
+            Socio socio = table.getSelectionModel().getSelectedItem();
+
+            if (socio == null) return;
+
+            boolean ok = invitacionService.usarInvitacion(socio.getIdSocio());
+
+            Alert alert;
+
+            if (ok) {
+                int disponibles = invitacionService.obtenerDisponibles(socio.getIdSocio());
+
+                alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText("Invitación usada. Disponibles: " + disponibles);
+            } else {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("No quedan invitaciones disponibles");
+            }
+
+            alert.showAndWait();
+
+            cargarSocios();
         });
 
         cargarSocios();

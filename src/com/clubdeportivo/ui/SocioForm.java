@@ -1,8 +1,10 @@
 package com.clubdeportivo.ui;
 
 import com.clubdeportivo.dao.SocioDAO;
+import com.clubdeportivo.dao.TipoCuotaDAO;
 import com.clubdeportivo.model.Socio;
 import com.clubdeportivo.model.TipoCuota;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -22,7 +24,6 @@ public class SocioForm extends Stage {
             socio = new Socio();
         }
 
-        // Variable final para usar en lambdas
         Socio socioActual = socio;
 
         TextField nombreField = new TextField(socioActual.getNombre());
@@ -32,17 +33,33 @@ public class SocioForm extends Stage {
 
         ComboBox<TipoCuota> cuotaBox = new ComboBox<>();
 
-        cuotaBox.getItems().addAll(
-                new TipoCuota(1, "Básica", 30.0, 2),
-                new TipoCuota(2, "Gold", 50.0, 5),
-                new TipoCuota(3, "Premium", 80.0, 10)
-        );
+        // 🔥 CARGAR DESDE BD (NO HARDCODE)
+        TipoCuotaDAO cuotaDAO = new TipoCuotaDAO();
+        cuotaBox.setItems(FXCollections.observableArrayList(cuotaDAO.obtenerTodos()));
 
+        // 🔥 MOSTRAR NOMBRE
+        cuotaBox.setCellFactory(cb -> new ListCell<>() {
+            @Override
+            protected void updateItem(TipoCuota c, boolean empty) {
+                super.updateItem(c, empty);
+                setText(empty || c == null ? null : c.getNombre());
+            }
+        });
+
+        cuotaBox.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(TipoCuota c, boolean empty) {
+                super.updateItem(c, empty);
+                setText(empty || c == null ? null : c.getNombre());
+            }
+        });
+
+        // 🔥 SELECCIONAR CUOTA ACTUAL
         cuotaBox.setValue(
                 cuotaBox.getItems().stream()
                         .filter(c -> c.getId() == socioActual.getIdTipoCuota())
                         .findFirst()
-                        .orElse(cuotaBox.getItems().get(0))
+                        .orElse(null)
         );
 
         Button guardarBtn = new Button("Guardar");
@@ -86,6 +103,7 @@ public class SocioForm extends Stage {
                 socioActual.setActivo(true);
             }
 
+            // 🔥 IMPORTANTE (esto ya lo hacías bien)
             socioActual.setIdTipoCuota(cuotaBox.getValue().getId());
 
             SocioDAO dao = new SocioDAO();
@@ -109,8 +127,10 @@ public class SocioForm extends Stage {
             apellidosField.clear();
             emailField.clear();
             telefonoField.clear();
-            cuotaBox.setValue(cuotaBox.getItems().get(0));
 
+            if (!cuotaBox.getItems().isEmpty()) {
+                cuotaBox.setValue(cuotaBox.getItems().get(0));
+            }
         });
 
         cancelarBtn.setOnAction(e -> this.close());

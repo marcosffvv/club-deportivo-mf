@@ -6,7 +6,8 @@ import com.clubdeportivo.model.TipoCuota;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TipoCuotaDAO {
 
@@ -29,10 +30,38 @@ public class TipoCuotaDAO {
                 );
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    public List<TipoCuota> obtenerTodos() {
+
+        List<TipoCuota> lista = new ArrayList<>();
+
+        String sql = "SELECT * FROM tipocuota";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                TipoCuota cuota = new TipoCuota(
+                        rs.getInt("id_tipo_cuota"),
+                        rs.getString("nombre"),
+                        rs.getDouble("precio"),
+                        rs.getInt("max_invitaciones_mes")
+                );
+
+                lista.add(cuota);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return lista;
     }
 }
