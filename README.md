@@ -142,16 +142,47 @@ Para ejecutar la aplicación es necesario disponer de:
 
 ---
 
-## Estado del proyecto
-
-El proyecto se encuentra en desarrollo como parte del Proyecto Fin de Ciclo del ciclo formativo de Desarrollo de Aplicaciones Multiplataforma.
-
-El sistema implementa progresivamente las funcionalidades definidas en el análisis del proyecto, comenzando por la gestión básica de socios y ampliándose posteriormente con la gestión de pagos e invitaciones.
-
----
-
 ## Autor
 
 Marcos Fraile Fernández
 
 Proyecto desarrollado como parte del módulo de Proyecto Final del ciclo formativo de Desarrollo de Aplicaciones Multiplataforma (DAM).
+
+---
+
+## INSTRUCCIONES DE EJECUCIÓN
+
+1. Requisitos:
+
+   * Java 17 instalado
+   * MySQL instalado
+
+
+2. Base de datos:
+
+   * Crear una base de datos llamada: club_deportivo
+   * Ejecutar el archivo: base_de_datos/club_deportivo.sql
+
+
+3. Configuración:
+
+   * Usuario MySQL: root
+   * Contraseña: (indicar la tuya o cambiar en DatabaseConnection.java)
+
+
+4. Ejecución:
+
+   * Ir a la carpeta "ejecutable"
+   * Ejecutar el archivo run.bat
+
+
+5. Uso:
+
+   * Añadir socios
+   * Registrar pagos
+   * Usar invitaciones
+
+NOTAS:
+
+  * Si hay errores de conexión, revisar usuario y contraseña de MySQL
+  * JavaFX ya está incluido en la carpeta ejecutable
