@@ -4,12 +4,14 @@ import com.clubdeportivo.dao.SocioDAO;
 import com.clubdeportivo.model.Socio;
 import com.clubdeportivo.service.InvitacionService;
 import com.clubdeportivo.service.PagoService;
+import com.clubdeportivo.service.Sesion;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,11 +28,77 @@ public class SocioView extends VBox {
         PagoService pagoService = new PagoService();
         InvitacionService invitacionService = new InvitacionService();
 
-        // 🔥 TÍTULO
+        // 🔥 HEADER
         Label titulo = new Label("Gestión de Socios");
-        titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        titulo.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        // COLUMNAS
+        Label usuarioLabel = new Label("Bienvenido, " + Sesion.getUsuario().getUsername());
+
+        Button logoutBtn = new Button("Cerrar sesión");
+        logoutBtn.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
+
+        HBox rightHeader = new HBox(10, usuarioLabel, logoutBtn);
+        rightHeader.setAlignment(Pos.CENTER_RIGHT);
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        HBox header = new HBox(10, titulo, spacer, rightHeader);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setStyle("-fx-padding: 10;");
+
+        logoutBtn.setOnAction(e -> {
+            Sesion.cerrarSesion();
+            new LoginView().show();
+            ((Stage) this.getScene().getWindow()).close();
+        });
+
+        // 🔥 BOTONES
+
+        Button btnAñadir = new Button("Añadir socio");
+        Button btnEditar = new Button("Editar socio");
+        Button btnEliminar = new Button("Eliminar socio");
+
+        Button btnRecargar = new Button("Recargar");
+
+        Button btnPago = new Button("Registrar pago");
+        Button btnInvitacion = new Button("Usar invitación");
+
+        Button btnAdmin = new Button("Nuevo admin");
+        Button btnKpi = new Button("KPI´s club");
+
+        // ESTILOS
+        btnAñadir.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+        btnEditar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+        btnEliminar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+
+        btnRecargar.setStyle("-fx-background-color: #9E9E9E; -fx-text-fill: white;");
+
+        btnPago.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white;");
+        btnInvitacion.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white;");
+
+        btnAdmin.setStyle("-fx-background-color: #673AB7; -fx-text-fill: white;");
+        btnKpi.setStyle("-fx-background-color: #FF9800; -fx-text-fill: white;");
+
+        // 🔥 AGRUPACIONES
+        HBox bloqueSocios = new HBox(10, btnAñadir, btnEditar, btnEliminar);
+        HBox bloqueSistema = new HBox(10, btnRecargar);
+        HBox bloquePagos = new HBox(10, btnPago, btnInvitacion);
+        HBox bloqueAdmin = new HBox(10, btnAdmin);
+        HBox bloqueKpi = new HBox(10, btnKpi);
+
+        HBox contenedorBotones = new HBox(20,
+                bloqueSocios,
+                bloqueSistema,
+                bloquePagos,
+                bloqueAdmin,
+                bloqueKpi
+        );
+
+        contenedorBotones.setStyle("-fx-padding: 20 10 10 10;");
+
+        // 🔥 TABLA
+
         TableColumn<Socio, String> idCol = new TableColumn<>("ID");
         idCol.setCellValueFactory(data ->
                 new SimpleStringProperty(String.valueOf(data.getValue().getIdSocio()))
@@ -73,19 +141,15 @@ public class SocioView extends VBox {
             return new SimpleStringProperty(nombreCuota);
         });
 
-        // ESTADO
         TableColumn<Socio, String> estadoCol = new TableColumn<>("Estado");
         estadoCol.setCellValueFactory(data -> {
 
             Socio socio = data.getValue();
 
-            int mes = LocalDate.now().getMonthValue();
-            int anio = LocalDate.now().getYear();
-
             String estado = pagoService.obtenerEstadoPago(
                     socio.getIdSocio(),
-                    mes,
-                    anio
+                    LocalDate.now().getMonthValue(),
+                    LocalDate.now().getYear()
             );
 
             return new SimpleStringProperty(estado);
@@ -111,162 +175,68 @@ public class SocioView extends VBox {
             }
         });
 
-        // INVITACIONES
         TableColumn<Socio, String> invitacionesCol = new TableColumn<>("Invitaciones");
-
         invitacionesCol.setCellValueFactory(data -> {
-            Socio socio = data.getValue();
-            int disponibles = invitacionService.obtenerDisponibles(socio.getIdSocio());
+            int disponibles = invitacionService.obtenerDisponibles(data.getValue().getIdSocio());
             return new SimpleStringProperty(String.valueOf(disponibles));
         });
 
-        invitacionesCol.setCellFactory(column -> new TableCell<>() {
-            @Override
-            protected void updateItem(String value, boolean empty) {
-                super.updateItem(value, empty);
-
-                if (empty || value == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(value);
-
-                    int num = Integer.parseInt(value);
-
-                    if (num == 0) {
-                        setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
-                    } else {
-                        setStyle("-fx-text-fill: green;");
-                    }
-                }
-            }
-        });
-
         table.getColumns().addAll(
-                idCol,
-                nombreCol,
-                apellidoCol,
-                emailCol,
-                telefonoCol,
-                cuotaCol,
-                estadoCol,
-                invitacionesCol
+                idCol, nombreCol, apellidoCol, emailCol,
+                telefonoCol, cuotaCol, estadoCol, invitacionesCol
         );
 
-        // 🔥 MEJORAS TABLA
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.setPlaceholder(new Label("No hay datos disponibles"));
-        table.setStyle("-fx-selection-bar: #90CAF9;");
 
-        // BOTONES
-        Button btnAñadir = new Button("Añadir socio");
-        Button btnEditar = new Button("Editar socio");
-        Button btnEliminar = new Button("Eliminar socio");
-        Button btnRecargar = new Button("Recargar");
-        Button btnPago = new Button("Registrar pago");
-        Button btnInvitacion = new Button("Usar invitación");
-
-        // 🔥 ESTILO BOTONES
-        btnAñadir.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
-        btnEditar.setStyle("-fx-background-color: #9E9E9E; -fx-text-fill: white;");
-        btnEliminar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
-        btnRecargar.setStyle("-fx-background-color: #9E9E9E; -fx-text-fill: white;");
-        btnPago.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
-        btnInvitacion.setStyle("-fx-background-color: #9E9E9E; -fx-text-fill: white;");
-
-        HBox botones = new HBox(10);
-        botones.setStyle("-fx-padding: 10; -fx-alignment: center-left;");
-        botones.getChildren().addAll(
-                btnAñadir,
-                btnEditar,
-                btnEliminar,
-                btnRecargar,
-                btnPago,
-                btnInvitacion
-        );
+        // 🔥 ACCIONES
 
         btnRecargar.setOnAction(e -> cargarSocios());
 
         btnEliminar.setOnAction(e -> {
+            Socio s = table.getSelectionModel().getSelectedItem();
+            if (s == null) return;
 
-            Socio socioSeleccionado = table.getSelectionModel().getSelectedItem();
-            if (socioSeleccionado == null) return;
+            Alert a = new Alert(Alert.AlertType.CONFIRMATION);
+            a.setContentText("¿Eliminar socio?");
+            Optional<ButtonType> r = a.showAndWait();
 
-            Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
-            alerta.setTitle("Confirmar eliminación");
-            alerta.setHeaderText("Eliminar socio");
-            alerta.setContentText("¿Seguro que deseas eliminar este socio?");
-
-            Optional<ButtonType> resultado = alerta.showAndWait();
-
-            if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-
-                SocioDAO dao = new SocioDAO();
-                dao.eliminarSocio(socioSeleccionado.getIdSocio());
-
+            if (r.isPresent() && r.get() == ButtonType.OK) {
+                new SocioDAO().eliminarSocio(s.getIdSocio());
                 cargarSocios();
             }
         });
 
-        btnAñadir.setOnAction(e -> {
-            SocioForm form = new SocioForm(null, this::cargarSocios);
-            form.show();
-        });
+        btnAñadir.setOnAction(e -> new SocioForm(null, this::cargarSocios).show());
 
         btnEditar.setOnAction(e -> {
-
-            Socio socioSeleccionado = table.getSelectionModel().getSelectedItem();
-
-            if (socioSeleccionado != null) {
-                SocioForm form = new SocioForm(socioSeleccionado, this::cargarSocios);
-                form.show();
-            }
+            Socio s = table.getSelectionModel().getSelectedItem();
+            if (s != null) new SocioForm(s, this::cargarSocios).show();
         });
 
-        btnPago.setOnAction(e -> {
-            PagoForm form = new PagoForm();
-            form.show();
-        });
+        btnPago.setOnAction(e -> new PagoForm().show());
 
         btnInvitacion.setOnAction(e -> {
-
-            Socio socio = table.getSelectionModel().getSelectedItem();
-
-            if (socio == null) return;
-
-            boolean ok = invitacionService.usarInvitacion(socio.getIdSocio());
-
-            Alert alert;
-
-            if (ok) {
-                int disponibles = invitacionService.obtenerDisponibles(socio.getIdSocio());
-                alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setContentText("Invitación usada. Disponibles: " + disponibles);
-            } else {
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("No quedan invitaciones disponibles");
-            }
-
-            alert.showAndWait();
-
+            Socio s = table.getSelectionModel().getSelectedItem();
+            if (s == null) return;
+            invitacionService.usarInvitacion(s.getIdSocio());
             cargarSocios();
         });
 
+        btnAdmin.setOnAction(e -> new UsuarioForm().show());
+        btnKpi.setOnAction(e -> new KpiView().show());
+
         cargarSocios();
 
-        // 🔥 ESTILO GENERAL
-        this.setSpacing(15);
+        // 🔥 ESPACIADO GENERAL
+        this.setSpacing(25);
         this.setStyle("-fx-padding: 15;");
 
-        this.getChildren().addAll(titulo, botones, table);
+        this.getChildren().addAll(header, contenedorBotones, table);
     }
 
     private void cargarSocios() {
-
-        SocioDAO socioDAO = new SocioDAO();
-        List<Socio> socios = socioDAO.obtenerTodos();
-
-        ObservableList<Socio> lista = FXCollections.observableArrayList(socios);
-        table.setItems(lista);
+        List<Socio> socios = new SocioDAO().obtenerTodos();
+        table.setItems(FXCollections.observableArrayList(socios));
     }
 }

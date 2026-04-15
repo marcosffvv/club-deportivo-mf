@@ -1,8 +1,7 @@
 package com.clubdeportivo;
 
-import com.clubdeportivo.ui.SocioView;
+import com.clubdeportivo.ui.LoginView;
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
@@ -10,13 +9,9 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) {
 
-        SocioView view = new SocioView();
-
-        Scene scene = new Scene(view, 900, 550);
-
-        stage.setTitle("Club Deportivo - Gestión de socios");
-        stage.setScene(scene);
-        stage.show();
+        // 🔥 lanzar login en vez de la app directamente
+        LoginView login = new LoginView();
+        login.show();
     }
 
     public static void main(String[] args) {

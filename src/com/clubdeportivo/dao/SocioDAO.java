@@ -126,16 +126,30 @@ public class SocioDAO {
 
     public void eliminarSocio(int idSocio) {
 
-        String sql = "DELETE FROM Socio WHERE id_socio=?";
+        String deleteInvitaciones = "DELETE FROM invitacion WHERE id_socio=?";
+        String deletePagos = "DELETE FROM pago WHERE id_socio=?";
+        String deleteSocio = "DELETE FROM socio WHERE id_socio=?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
 
-            stmt.setInt(1, idSocio);
+            // 🔥 IMPORTANTE: orden correcto
 
-            stmt.executeUpdate();
+            try (PreparedStatement stmt1 = conn.prepareStatement(deleteInvitaciones)) {
+                stmt1.setInt(1, idSocio);
+                stmt1.executeUpdate();
+            }
 
-            System.out.println("Socio eliminado");
+            try (PreparedStatement stmt2 = conn.prepareStatement(deletePagos)) {
+                stmt2.setInt(1, idSocio);
+                stmt2.executeUpdate();
+            }
+
+            try (PreparedStatement stmt3 = conn.prepareStatement(deleteSocio)) {
+                stmt3.setInt(1, idSocio);
+                stmt3.executeUpdate();
+            }
+
+            System.out.println("Socio eliminado correctamente");
 
         } catch (Exception e) {
             e.printStackTrace();
