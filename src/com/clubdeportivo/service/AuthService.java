@@ -16,21 +16,26 @@ public class AuthService {
 
         String hashedInput = HashUtil.hash(password);
 
-        if (!hashedInput.equals(u.getPassword())) return null;
+        // 🔥 CAMBIO CLAVE
+        if (!hashedInput.equals(u.getPasswordHash())) return null;
 
+        // 🔥 SOLO ADMINS
         if (!"ADMIN".equalsIgnoreCase(u.getRol())) return null;
 
         return u;
     }
 
-    public void crearAdmin(String username, String password) {
+    public boolean crearAdmin(String username, String password) {
 
         Usuario u = new Usuario();
 
         u.setUsername(username);
-        u.setPassword(HashUtil.hash(password));
+
+        // 🔥 IMPORTANTE: guardar hash
+        u.setPasswordHash(HashUtil.hash(password));
+
         u.setRol("ADMIN");
 
-        dao.insertarUsuario(u);
+        return dao.insertarUsuario(u); // 🔥 devolvemos resultado
     }
 }

@@ -4,7 +4,7 @@ public class Usuario {
 
     private int id;
     private String username;
-    private String password; // guarda el hash
+    private String passwordHash; // 🔥 ahora correcto
     private String rol;
 
     public int getId() {
@@ -23,12 +23,13 @@ public class Usuario {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    // 🔥 IMPORTANTE: ahora coincide con la BD
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public String getRol() {

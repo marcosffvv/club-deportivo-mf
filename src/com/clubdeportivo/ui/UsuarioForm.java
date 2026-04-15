@@ -35,17 +35,29 @@ public class UsuarioForm extends Stage {
             String user = userField.getText();
             String pass = passField.getText();
 
+            // 🔥 VALIDACIÓN CAMPOS
             if (user.isEmpty() || pass.isEmpty()) {
                 new Alert(Alert.AlertType.WARNING, "Completa todos los campos").showAndWait();
                 return;
             }
 
             AuthService auth = new AuthService();
-            auth.crearAdmin(user, pass);
 
-            new Alert(Alert.AlertType.INFORMATION, "Administrador creado").showAndWait();
+            // 🔥 CLAVE: comprobar resultado
+            boolean creado = auth.crearAdmin(user, pass);
 
-            this.close();
+            Alert alert;
+
+            if (creado) {
+                alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText("Administrador creado correctamente");
+                this.close(); // solo cerramos si todo OK
+            } else {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("El usuario ya existe");
+            }
+
+            alert.showAndWait();
         });
 
         this.setScene(new Scene(root, 300, 200));
