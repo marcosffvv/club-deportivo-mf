@@ -9,6 +9,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.time.LocalDate;
+import java.util.List;
+
 public class KpiView extends Stage {
 
     public KpiView() {
@@ -20,27 +23,68 @@ public class KpiView extends Stage {
         int gold = dao.getSociosGold();
         int premium = dao.getSociosPremium();
 
-        // 🔥 TÍTULO
+        // 🔥 NUEVOS KPI
+        int mes = LocalDate.now().getMonthValue();
+        int anio = LocalDate.now().getYear();
+
+        int pendientes = dao.getSociosPendientes(mes, anio).size();
+        int conInvitaciones = dao.getSociosConInvitaciones().size();
+
         Label titulo = new Label("Panel de KPI´s del Club");
         titulo.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        // 🔥 GRID CENTRADO
         GridPane grid = new GridPane();
         grid.setHgap(20);
         grid.setVgap(20);
         grid.setAlignment(Pos.CENTER);
 
-        grid.add(crearTarjeta("Socios Totales", total), 0, 0);
+        // 🔥 TARJETA TOTAL (YA TENÍAS DRILLDOWN)
+        VBox tarjetaTotal = crearTarjeta("Socios Totales", total);
+        tarjetaTotal.setOnMouseClicked(e -> new KpiDrilldownView().show());
+
+        // 🔥 NUEVAS TARJETAS
+        VBox tarjetaPendientes = crearTarjeta("Pendientes pago", pendientes);
+        VBox tarjetaInvitaciones = crearTarjeta("Con invitaciones", conInvitaciones);
+
+        // 🔥 DRILLDOWN PENDIENTES
+        tarjetaPendientes.setOnMouseClicked(e -> {
+
+            List<String[]> datos = dao.getSociosPendientes(mes, anio);
+
+            new KpiListView(
+                    "Socios pendientes de pago",
+                    new String[]{"Nombre", "Apellidos"},
+                    datos
+            ).show();
+        });
+
+        // 🔥 DRILLDOWN INVITACIONES
+        tarjetaInvitaciones.setOnMouseClicked(e -> {
+
+            List<String[]> datos = dao.getSociosConInvitaciones();
+
+            new KpiListView(
+                    "Socios con invitaciones disponibles",
+                    new String[]{"Nombre", "Apellidos", "Invitaciones"},
+                    datos
+            ).show();
+        });
+
+        // 🔥 GRID
+        grid.add(tarjetaTotal, 0, 0);
         grid.add(crearTarjeta("Básica", basica), 1, 0);
         grid.add(crearTarjeta("Gold", gold), 0, 1);
         grid.add(crearTarjeta("Premium", premium), 1, 1);
 
-        // 🔥 CONTENEDOR GENERAL
+        // 🔥 NUEVA FILA KPI
+        grid.add(tarjetaPendientes, 0, 2);
+        grid.add(tarjetaInvitaciones, 1, 2);
+
         VBox root = new VBox(20, titulo, grid);
         root.setPadding(new Insets(20));
         root.setAlignment(Pos.CENTER);
 
-        Scene scene = new Scene(root, 500, 400);
+        Scene scene = new Scene(root, 550, 500);
 
         this.setTitle("KPI´s del Club");
         this.setScene(scene);
@@ -56,11 +100,8 @@ public class KpiView extends Stage {
 
         VBox box = new VBox(10, tituloLabel, valorLabel);
         box.setAlignment(Pos.CENTER);
-
-        // 🔥 TAMAÑO FIJO (CLAVE)
         box.setPrefSize(150, 120);
 
-        // 🔥 ESTILO MÁS PRO
         box.setStyle(
                 "-fx-border-color: #ccc;" +
                         "-fx-border-radius: 8;" +

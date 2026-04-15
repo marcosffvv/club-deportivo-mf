@@ -3,9 +3,7 @@ package com.clubdeportivo.dao;
 import com.clubdeportivo.config.DatabaseConnection;
 import com.clubdeportivo.model.Socio;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +41,6 @@ public class SocioDAO {
         return socios;
     }
 
-    // 🔥 NUEVO MÉTODO (EL QUE TE FALTABA)
     public Socio obtenerPorId(int idSocio) {
 
         String sql = "SELECT * FROM Socio WHERE id_socio = ?";
@@ -132,8 +129,6 @@ public class SocioDAO {
 
         try (Connection conn = DatabaseConnection.getConnection()) {
 
-            // 🔥 IMPORTANTE: orden correcto
-
             try (PreparedStatement stmt1 = conn.prepareStatement(deleteInvitaciones)) {
                 stmt1.setInt(1, idSocio);
                 stmt1.executeUpdate();
@@ -154,5 +149,31 @@ public class SocioDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // 🔥 NUEVO MÉTODO (DRILLDOWN KPI)
+    public List<String[]> obtenerEvolucionSocios() {
+
+        List<String[]> datos = new ArrayList<>();
+
+        String sql = "{CALL getEvolucionSocios()}";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+
+                String fecha = rs.getDate("fecha_alta").toString();
+                String total = String.valueOf(rs.getInt("total_acumulado"));
+
+                datos.add(new String[]{fecha, total});
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return datos;
     }
 }

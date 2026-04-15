@@ -87,7 +87,7 @@ public class SocioView extends VBox {
         HBox bloqueAdmin = new HBox(10, btnAdmin);
         HBox bloqueKpi = new HBox(10, btnKpi);
 
-        HBox contenedorBotones = new HBox(20,
+        HBox contenedorBotones = new HBox(40,
                 bloqueSocios,
                 bloqueSistema,
                 bloquePagos,
