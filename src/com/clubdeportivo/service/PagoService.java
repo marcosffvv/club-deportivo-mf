@@ -15,22 +15,22 @@ public class PagoService {
     private SocioDAO socioDAO = new SocioDAO();
     private TipoCuotaDAO tipoCuotaDAO = new TipoCuotaDAO();
 
-    // 🔥 REGISTRAR PAGO (MÉTODO QUE TE FALTABA)
+    // REGISTRAR PAGO
     public boolean registrarPago(int idSocio, int mes, int anio) {
 
-        // 1. Obtener socio
+        // Obtener socio
         Socio socio = socioDAO.obtenerPorId(idSocio);
         if (socio == null) return false;
 
-        // 2. Obtener cuota
+        // Obtener cuota
         TipoCuota cuota = tipoCuotaDAO.obtenerPorId(socio.getIdTipoCuota());
         if (cuota == null) return false;
 
-        // 3. Comprobar si ya existe pago
+        // Comprobar si ya existe pago
         boolean yaExiste = pagoDAO.existePago(idSocio, mes, anio);
         if (yaExiste) return false;
 
-        // 4. Crear pago automático con importe correcto
+        // Crear pago automático con importe correcto
         Pago pago = new Pago(
                 idSocio,
                 mes,
@@ -39,13 +39,13 @@ public class PagoService {
                 cuota.getPrecio()
         );
 
-        // 5. Guardar
+        // Guardar
         pagoDAO.insertarPago(pago);
 
         return true;
     }
 
-    // 🔹 ESTADO DE PAGO
+    // ESTADO DE PAGO
     public String obtenerEstadoPago(int idSocio, int mes, int anio) {
 
         boolean existePago = pagoDAO.existePago(idSocio, mes, anio);

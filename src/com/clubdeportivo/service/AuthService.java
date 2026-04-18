@@ -16,10 +16,9 @@ public class AuthService {
 
         String hashedInput = HashUtil.hash(password);
 
-        // 🔥 CAMBIO CLAVE
         if (!hashedInput.equals(u.getPasswordHash())) return null;
 
-        // 🔥 SOLO ADMINS
+        // SOLO ADMINS
         if (!"ADMIN".equalsIgnoreCase(u.getRol())) return null;
 
         return u;
@@ -31,7 +30,7 @@ public class AuthService {
 
         u.setUsername(username);
 
-        // 🔥 IMPORTANTE: guardar hash
+        // guardar hash
         u.setPasswordHash(HashUtil.hash(password));
 
         u.setRol("ADMIN");

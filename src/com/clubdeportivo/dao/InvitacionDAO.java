@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 
 public class InvitacionDAO {
 
-    // 🔹 Obtener invitaciones usadas
+    // Obtener invitaciones usadas
     public int obtenerUsadas(int idSocio, int mes, int anio) {
 
         String sql = "SELECT cantidad_usadas FROM invitacion WHERE id_socio = ? AND mes = ? AND anio = ?";
@@ -33,7 +33,7 @@ public class InvitacionDAO {
         return 0; // si no hay registro → 0 usadas
     }
 
-    // 🔹 Insertar registro inicial
+    // Insertar registro inicial
     public void insertar(int idSocio, int mes, int anio, int cantidad) {
 
         String sql = "INSERT INTO invitacion (id_socio, mes, anio, cantidad_usadas) VALUES (?, ?, ?, ?)";
@@ -53,7 +53,7 @@ public class InvitacionDAO {
         }
     }
 
-    // 🔹 Actualizar invitaciones
+    // Actualizar invitaciones
     public void actualizar(int idSocio, int mes, int anio, int cantidad) {
 
         String sql = "UPDATE invitacion SET cantidad_usadas = ? WHERE id_socio = ? AND mes = ? AND anio = ?";

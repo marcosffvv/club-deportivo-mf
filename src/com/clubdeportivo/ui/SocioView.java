@@ -20,6 +20,7 @@ import java.util.Optional;
 public class SocioView extends VBox {
 
     private TableView<Socio> table;
+    private ObservableList<Socio> listaOriginal;
 
     public SocioView() {
 
@@ -28,7 +29,7 @@ public class SocioView extends VBox {
         PagoService pagoService = new PagoService();
         InvitacionService invitacionService = new InvitacionService();
 
-        // 🔥 HEADER
+        // HEADER
         Label titulo = new Label("Gestión de Socios");
         titulo.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
@@ -40,10 +41,10 @@ public class SocioView extends VBox {
         HBox rightHeader = new HBox(10, usuarioLabel, logoutBtn);
         rightHeader.setAlignment(Pos.CENTER_RIGHT);
 
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
+        Region spacerHeader = new Region();
+        HBox.setHgrow(spacerHeader, Priority.ALWAYS);
 
-        HBox header = new HBox(10, titulo, spacer, rightHeader);
+        HBox header = new HBox(10, titulo, spacerHeader, rightHeader);
         header.setAlignment(Pos.CENTER_LEFT);
         header.setStyle("-fx-padding: 10;");
 
@@ -53,11 +54,15 @@ public class SocioView extends VBox {
             ((Stage) this.getScene().getWindow()).close();
         });
 
-        // 🔥 BOTONES
+        // BUSCADOR
+        TextField buscadorField = new TextField();
+        buscadorField.setPromptText("Buscar socio...");
+        buscadorField.setPrefWidth(200);
 
-        Button btnAñadir = new Button("Añadir socio");
+        // BOTONES
+        Button btnAñadir = new Button("Alta socio");
         Button btnEditar = new Button("Editar socio");
-        Button btnEliminar = new Button("Eliminar socio");
+        Button btnEliminar = new Button("Baja socio");
 
         Button btnRecargar = new Button("Recargar");
 
@@ -80,24 +85,32 @@ public class SocioView extends VBox {
         btnAdmin.setStyle("-fx-background-color: #673AB7; -fx-text-fill: white;");
         btnKpi.setStyle("-fx-background-color: #FF9800; -fx-text-fill: white;");
 
-        // 🔥 AGRUPACIONES
+        // AGRUPACIONES
         HBox bloqueSocios = new HBox(10, btnAñadir, btnEditar, btnEliminar);
         HBox bloqueSistema = new HBox(10, btnRecargar);
         HBox bloquePagos = new HBox(10, btnPago, btnInvitacion);
         HBox bloqueAdmin = new HBox(10, btnAdmin);
         HBox bloqueKpi = new HBox(10, btnKpi);
 
-        HBox contenedorBotones = new HBox(40,
+        // SPACER PARA EMPUJAR BUSCADOR
+        Region spacerBotones = new Region();
+        HBox.setHgrow(spacerBotones, Priority.ALWAYS);
+
+        // CONTENEDOR PRINCIPAL
+        HBox contenedorBotones = new HBox(25,
                 bloqueSocios,
                 bloqueSistema,
                 bloquePagos,
                 bloqueAdmin,
-                bloqueKpi
+                bloqueKpi,
+                spacerBotones,
+                buscadorField
         );
 
+        contenedorBotones.setAlignment(Pos.CENTER_LEFT);
         contenedorBotones.setStyle("-fx-padding: 20 10 10 10;");
 
-        // 🔥 TABLA
+        // TABLA
 
         TableColumn<Socio, String> idCol = new TableColumn<>("ID");
         idCol.setCellValueFactory(data ->
@@ -162,7 +175,6 @@ public class SocioView extends VBox {
 
                 if (empty || estado == null) {
                     setText(null);
-                    setStyle("");
                 } else {
                     setText(estado);
 
@@ -187,9 +199,27 @@ public class SocioView extends VBox {
         );
 
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        table.setPlaceholder(new Label("No hay datos disponibles"));
 
-        // 🔥 ACCIONES
+        // FILTRO
+        buscadorField.textProperty().addListener((obs, oldVal, newVal) -> {
+
+            String filtro = newVal.toLowerCase();
+
+            ObservableList<Socio> filtrados = FXCollections.observableArrayList();
+
+            for (Socio s : listaOriginal) {
+
+                if (s.getNombre().toLowerCase().contains(filtro) ||
+                        s.getApellidos().toLowerCase().contains(filtro)) {
+
+                    filtrados.add(s);
+                }
+            }
+
+            table.setItems(filtrados);
+        });
+
+        // ACCIONES
 
         btnRecargar.setOnAction(e -> cargarSocios());
 
@@ -208,7 +238,6 @@ public class SocioView extends VBox {
         });
 
         btnAñadir.setOnAction(e -> new SocioForm(null, this::cargarSocios).show());
-
         btnEditar.setOnAction(e -> {
             Socio s = table.getSelectionModel().getSelectedItem();
             if (s != null) new SocioForm(s, this::cargarSocios).show();
@@ -228,7 +257,6 @@ public class SocioView extends VBox {
 
         cargarSocios();
 
-        // 🔥 ESPACIADO GENERAL
         this.setSpacing(25);
         this.setStyle("-fx-padding: 15;");
 
@@ -237,6 +265,7 @@ public class SocioView extends VBox {
 
     private void cargarSocios() {
         List<Socio> socios = new SocioDAO().obtenerTodos();
-        table.setItems(FXCollections.observableArrayList(socios));
+        listaOriginal = FXCollections.observableArrayList(socios);
+        table.setItems(listaOriginal);
     }
 }

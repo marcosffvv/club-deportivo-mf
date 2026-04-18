@@ -21,7 +21,7 @@ public class PagoForm extends Stage {
         SocioDAO socioDAO = new SocioDAO();
         PagoService pagoService = new PagoService();
 
-        // 🔹 Combo socios
+        // Combo socios
         ComboBox<Socio> comboSocios = new ComboBox<>();
         List<Socio> socios = socioDAO.obtenerTodos();
         comboSocios.setItems(FXCollections.observableArrayList(socios));
@@ -43,14 +43,14 @@ public class PagoForm extends Stage {
             }
         });
 
-        // 🔹 Mes y año
+        // Mes y año
         TextField txtMes = new TextField(String.valueOf(LocalDate.now().getMonthValue()));
         txtMes.setPromptText("Mes (1-12)");
 
         TextField txtAnio = new TextField(String.valueOf(LocalDate.now().getYear()));
         txtAnio.setPromptText("Año");
 
-        // 🔹 Botón guardar
+        // Botón guardar
         Button btnGuardar = new Button("Registrar pago");
 
         btnGuardar.setOnAction(e -> {

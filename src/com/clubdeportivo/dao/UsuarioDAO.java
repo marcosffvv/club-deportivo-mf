@@ -40,7 +40,7 @@ public class UsuarioDAO {
 
     public boolean insertarUsuario(Usuario usuario) {
 
-        // 🔥 VALIDACIÓN PREVIA
+        // VALIDACIÓN PREVIA
         if (existeUsername(usuario.getUsername())) {
             return false;
         }

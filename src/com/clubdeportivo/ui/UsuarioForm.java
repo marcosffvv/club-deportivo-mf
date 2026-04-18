@@ -35,7 +35,7 @@ public class UsuarioForm extends Stage {
             String user = userField.getText();
             String pass = passField.getText();
 
-            // 🔥 VALIDACIÓN CAMPOS
+            // VALIDACIÓN CAMPOS
             if (user.isEmpty() || pass.isEmpty()) {
                 new Alert(Alert.AlertType.WARNING, "Completa todos los campos").showAndWait();
                 return;
@@ -43,7 +43,7 @@ public class UsuarioForm extends Stage {
 
             AuthService auth = new AuthService();
 
-            // 🔥 CLAVE: comprobar resultado
+            // CLAVE: comprobar resultado
             boolean creado = auth.crearAdmin(user, pass);
 
             Alert alert;

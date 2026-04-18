@@ -14,31 +14,31 @@ public class InvitacionService {
     private SocioDAO socioDAO = new SocioDAO();
     private TipoCuotaDAO tipoCuotaDAO = new TipoCuotaDAO();
 
-    // 🔥 USAR INVITACIÓN
+    // USAR INVITACIÓN
     public boolean usarInvitacion(int idSocio) {
 
         int mes = LocalDate.now().getMonthValue();
         int anio = LocalDate.now().getYear();
 
-        // 1. Obtener socio
+        // Obtener socio
         Socio socio = socioDAO.obtenerPorId(idSocio);
         if (socio == null) return false;
 
-        // 2. Obtener cuota
+        // Obtener cuota
         TipoCuota cuota = tipoCuotaDAO.obtenerPorId(socio.getIdTipoCuota());
         if (cuota == null) return false;
 
         int maxInvitaciones = cuota.getMaxInvitacionesMes();
 
-        // 3. Obtener usadas
+        // Obtener usadas
         int usadas = invitacionDAO.obtenerUsadas(idSocio, mes, anio);
 
-        // 4. Validar límite
+        // Validar límite
         if (usadas >= maxInvitaciones) {
             return false;
         }
 
-        // 5. Insertar o actualizar
+        // Insertar o actualizar
         if (usadas == 0) {
             invitacionDAO.insertar(idSocio, mes, anio, 1);
         } else {
@@ -48,7 +48,7 @@ public class InvitacionService {
         return true;
     }
 
-    // 🔹 Obtener disponibles
+    // Obtener disponibles
     public int obtenerDisponibles(int idSocio) {
 
         int mes = LocalDate.now().getMonthValue();

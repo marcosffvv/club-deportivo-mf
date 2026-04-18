@@ -33,11 +33,10 @@ public class SocioForm extends Stage {
 
         ComboBox<TipoCuota> cuotaBox = new ComboBox<>();
 
-        // 🔥 CARGAR DESDE BD (NO HARDCODE)
         TipoCuotaDAO cuotaDAO = new TipoCuotaDAO();
         cuotaBox.setItems(FXCollections.observableArrayList(cuotaDAO.obtenerTodos()));
 
-        // 🔥 MOSTRAR NOMBRE
+        // MOSTRAR NOMBRE
         cuotaBox.setCellFactory(cb -> new ListCell<>() {
             @Override
             protected void updateItem(TipoCuota c, boolean empty) {
@@ -54,7 +53,7 @@ public class SocioForm extends Stage {
             }
         });
 
-        // 🔥 SELECCIONAR CUOTA ACTUAL
+        // SELECCIONAR CUOTA ACTUAL
         cuotaBox.setValue(
                 cuotaBox.getItems().stream()
                         .filter(c -> c.getId() == socioActual.getIdTipoCuota())
@@ -103,7 +102,7 @@ public class SocioForm extends Stage {
                 socioActual.setActivo(true);
             }
 
-            // 🔥 IMPORTANTE (esto ya lo hacías bien)
+            // IMPORTANTE (esto ya lo hacías bien)
             socioActual.setIdTipoCuota(cuotaBox.getValue().getId());
 
             SocioDAO dao = new SocioDAO();

@@ -8,6 +8,8 @@ import javafx.scene.chart.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class KpiDrilldownView extends Stage {
@@ -16,32 +18,42 @@ public class KpiDrilldownView extends Stage {
 
         SocioDAO dao = new SocioDAO();
 
-        // 🔥 EJES
+        // EJES
         CategoryAxis xAxis = new CategoryAxis();
-        xAxis.setLabel("Fecha de alta");
+        xAxis.setLabel("Mes - Año");
 
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Número de socios");
 
-        // 🔥 GRÁFICO
+        // GRÁFICO
         LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
         chart.setTitle("Evolución de socios");
 
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Altas de socios");
+        series.setName("Total acumulado");
 
-        // 🔥 DATOS
+        // FORMATEADOR
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-yyyy");
+
+        // DATOS
         List<String[]> datos = dao.obtenerEvolucionSocios();
 
         for (String[] d : datos) {
+
+            // convertir String → LocalDate
+            LocalDate fecha = LocalDate.parse(d[0]);
+
+            // formatear a mes-año
+            String fechaFormateada = fecha.format(formatter);
+
             series.getData().add(
-                    new XYChart.Data<>(d[0], Integer.parseInt(d[1]))
+                    new XYChart.Data<>(fechaFormateada, Integer.parseInt(d[1]))
             );
         }
 
         chart.getData().add(series);
 
-        // 🔥 CONTENEDOR
+        // CONTENEDOR
         VBox root = new VBox(20, chart);
         root.setPadding(new Insets(20));
         root.setAlignment(Pos.CENTER);

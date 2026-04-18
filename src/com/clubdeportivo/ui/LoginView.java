@@ -14,11 +14,11 @@ public class LoginView extends Stage {
 
     public LoginView() {
 
-        // 🔹 TÍTULO
+        // TÍTULO
         Label titulo = new Label("Acceso al sistema");
         titulo.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
 
-        // 🔹 CAMPOS
+        // CAMPOS
         TextField userField = new TextField();
         userField.setPromptText("Usuario");
         userField.setPrefWidth(220);
@@ -29,7 +29,7 @@ public class LoginView extends Stage {
         passField.setPrefWidth(220);
         passField.setStyle("-fx-padding: 8;");
 
-        // 🔹 BOTÓN LOGIN
+        // BOTÓN LOGIN
         Button loginBtn = new Button("Iniciar sesión");
         loginBtn.setPrefWidth(220);
         loginBtn.setStyle(
@@ -40,7 +40,7 @@ public class LoginView extends Stage {
                         "-fx-background-radius: 6;"
         );
 
-        // 🔹 BOTÓN RECUPERAR CONTRASEÑA
+        // BOTÓN RECUPERAR CONTRASEÑA
         Button recuperarBtn = new Button("¿Olvidaste tu contraseña?");
         recuperarBtn.setStyle(
                 "-fx-background-color: transparent;" +
@@ -55,7 +55,7 @@ public class LoginView extends Stage {
             alert.showAndWait();
         });
 
-        // 🔹 CONTENEDOR (CARD)
+        // CONTENEDOR (CARD)
         VBox card = new VBox(15, titulo, userField, passField, loginBtn, recuperarBtn);
         card.setAlignment(Pos.CENTER);
         card.setPadding(new Insets(25));
@@ -66,13 +66,13 @@ public class LoginView extends Stage {
                         "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10,0,0,4);"
         );
 
-        // 🔹 ROOT
+        // ROOT
         VBox root = new VBox(card);
         root.setAlignment(Pos.CENTER);
         root.setStyle("-fx-background-color: #f5f5f5;");
         root.setPadding(new Insets(30));
 
-        // 🔹 ACCIÓN LOGIN
+        // ACCIÓN LOGIN
         loginBtn.setOnAction(e -> {
 
             String user = userField.getText();
@@ -88,7 +88,7 @@ public class LoginView extends Stage {
                 SocioView view = new SocioView();
                 Stage mainStage = new Stage();
 
-                Scene scene = new Scene(view, 1000, 600);
+                Scene scene = new Scene(view, 1100, 600);
 
                 mainStage.setTitle("Club Deportivo - Gestión de socios");
                 mainStage.setScene(scene);
@@ -105,7 +105,7 @@ public class LoginView extends Stage {
             }
         });
 
-        // 🔹 ESCENA
+        // ESCENA
         Scene scene = new Scene(root, 400, 350);
 
         this.setTitle("Login");

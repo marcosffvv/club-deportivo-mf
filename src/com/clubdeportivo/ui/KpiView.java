@@ -23,7 +23,6 @@ public class KpiView extends Stage {
         int gold = dao.getSociosGold();
         int premium = dao.getSociosPremium();
 
-        // 🔥 NUEVOS KPI
         int mes = LocalDate.now().getMonthValue();
         int anio = LocalDate.now().getYear();
 
@@ -38,15 +37,12 @@ public class KpiView extends Stage {
         grid.setVgap(20);
         grid.setAlignment(Pos.CENTER);
 
-        // 🔥 TARJETA TOTAL (YA TENÍAS DRILLDOWN)
         VBox tarjetaTotal = crearTarjeta("Socios Totales", total);
         tarjetaTotal.setOnMouseClicked(e -> new KpiDrilldownView().show());
 
-        // 🔥 NUEVAS TARJETAS
         VBox tarjetaPendientes = crearTarjeta("Pendientes pago", pendientes);
         VBox tarjetaInvitaciones = crearTarjeta("Con invitaciones", conInvitaciones);
 
-        // 🔥 DRILLDOWN PENDIENTES
         tarjetaPendientes.setOnMouseClicked(e -> {
 
             List<String[]> datos = dao.getSociosPendientes(mes, anio);
@@ -58,7 +54,7 @@ public class KpiView extends Stage {
             ).show();
         });
 
-        // 🔥 DRILLDOWN INVITACIONES
+        // DRILLDOWN INVITACIONES
         tarjetaInvitaciones.setOnMouseClicked(e -> {
 
             List<String[]> datos = dao.getSociosConInvitaciones();
@@ -70,13 +66,12 @@ public class KpiView extends Stage {
             ).show();
         });
 
-        // 🔥 GRID
+        // GRID
         grid.add(tarjetaTotal, 0, 0);
         grid.add(crearTarjeta("Básica", basica), 1, 0);
         grid.add(crearTarjeta("Gold", gold), 0, 1);
         grid.add(crearTarjeta("Premium", premium), 1, 1);
 
-        // 🔥 NUEVA FILA KPI
         grid.add(tarjetaPendientes, 0, 2);
         grid.add(tarjetaInvitaciones, 1, 2);
 

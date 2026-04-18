@@ -151,7 +151,6 @@ public class SocioDAO {
         }
     }
 
-    // 🔥 NUEVO MÉTODO (DRILLDOWN KPI)
     public List<String[]> obtenerEvolucionSocios() {
 
         List<String[]> datos = new ArrayList<>();

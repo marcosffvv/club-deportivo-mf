@@ -9,7 +9,7 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) {
 
-        // 🔥 lanzar login en vez de la app directamente
+        // lanzar login
         LoginView login = new LoginView();
         login.show();
     }
